@@ -1,0 +1,31 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcuserstate
+
+# SwiftPM
+.build/
+.swiftpm/
+
+# CocoaPods/Carthage (no usamos, por si acaso)
+Pods/
+Carthage/
+
+# Swift Package artifacts
+Artifacts/
+
+# Swift, Logs
+*.swiftpm/xcode/package.xcworkspace/xcuserdata/
+*.log
+
+# Fastlane (no ahora)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# User files
+*.DS_Store
