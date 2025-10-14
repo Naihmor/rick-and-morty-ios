@@ -24,6 +24,12 @@ enum AppConfig {
 	/// Root path for the REST API.
 	static let apiRootPath: String = "/api"
 	
+	static let apiCharacterPath: String = "/character"
+	
+	static let apiLocationPath: String = "/location"
+	
+	static let apiEpisodePath: String = "/episode"
+	
 	/// Per-request timeout. Keep small to surface network issues quickly.
 	static let requestTimeout: TimeInterval = 20
 	

@@ -27,13 +27,12 @@ final class HTTPClient: HTTPClientProtocol {
 	/// Performs a request using `URLSession`, decoding the response into the provided type.
 	///
 	/// This is a stub to be implemented in the next step.
-	func request<T: Decodable & Sendable>(_ endpoint: Endpoint, as type: T.Type) async throws -> T {
+	func request<T>(_ endpoint: Endpoint) async throws -> T where T : Decodable {
 		let request = createGetRequest(from: endpoint.url())
 		do {
 			let (data, response) = try await session.data(for: request)
 			guard let http = response as? HTTPURLResponse else { throw HTTPError.unknown }
 			guard (200...299).contains(http.statusCode) else {
-				let message: String = try decodeJSONData(data: data)
 				throw HTTPError.server(statusCode: http.statusCode, message: try decodeJSONData(data: data))
 			}
 			return try decodeJSONData(data: data)
