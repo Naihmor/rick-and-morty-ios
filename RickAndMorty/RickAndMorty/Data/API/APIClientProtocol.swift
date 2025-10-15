@@ -13,19 +13,19 @@ import Foundation
 
 protocol APIClientProtocol: Sendable {
 	
-	func fetchCharacters(filter: CharactersFilter?) async throws -> CharacterResultDTO
+	func fetchCharacters(filter: CharactersFilter?) async throws -> ResultCharacterDTO
 	
 	func fetchCharacters(ids: [Int]) async throws -> [CharacterDTO]
 	
 	func fetchCharacter(id: Int) async throws -> CharacterDTO
 	
-	func fetchLocations(filter: LocationsFilter?) async throws -> ResultDTO<LocationDTO>
+	func fetchLocations(filter: LocationsFilter?) async throws -> ResultLocationDTO
 	
 	func fetchLocations(ids: [Int]) async throws -> [LocationDTO]
 	
 	func fetchLocation(id: Int) async throws -> LocationDTO
 	
-	func fetchEpisodes(filter: EpisodesFilter?) async throws -> ResultDTO<EpisodeDTO>
+    func fetchEpisodes(filter: EpisodesFilter?) async throws -> ResultEpisodeDTO
 	
 	func fetchEpisodes(ids: [Int]) async throws -> [EpisodeDTO]
 	

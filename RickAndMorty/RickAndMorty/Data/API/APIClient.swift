@@ -24,7 +24,7 @@ struct APIClient: APIClientProtocol {
 
 extension APIClient {
 	
-	func fetchCharacters(filter: CharactersFilter? = nil) async throws -> CharacterResultDTO {
+	func fetchCharacters(filter: CharactersFilter? = nil) async throws -> ResultCharacterDTO {
 		try await http.request(.getAllCharacters(filter))
 	}
 	

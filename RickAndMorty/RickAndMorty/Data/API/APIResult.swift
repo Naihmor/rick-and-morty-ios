@@ -1,5 +1,5 @@
 // 
-//  LocationDTO.swift
+//  APIResult.swift
 //  RickAndMorty
 //
 //  Created by Javier Fernández Martínez on 13/10/25.
@@ -11,12 +11,8 @@
 
 import Foundation
 
-struct LocationDTO: Decodable {
-	let id: Int
-	let name: String
-	let type: String
-	let dimension: String
-	let residents: [String]
-	let url: String
-	let created: Date
+protocol APIResult<T>: Decodable where T : Decodable {
+    associatedtype T
+    var info: InfoDTO { get }
+    var results: [T] { get }
 }

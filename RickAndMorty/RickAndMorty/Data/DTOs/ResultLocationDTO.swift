@@ -1,8 +1,8 @@
 // 
-//  ResultDTO.swift
+//  ResultLocationDTO.swift
 //  RickAndMorty
 //
-//  Created by Javier Fernández Martínez on 13/10/25.
+//  Created by Javier Fernández Martínez on 15/10/25.
 //  Copyright © 2025 Naihmor Apps. All rights reserved.
 //
 //  This code is the property of Naihmor Apps. Unauthorized distribution, 
@@ -11,7 +11,7 @@
 
 import Foundation
 
-struct ResultDTO<T>: Decodable where T : Decodable {
-	let info: InfoDTO
-	let results: [T]
+struct ResultLocationDTO: APIResult, Decodable {
+    let info: InfoDTO
+    let results: [LocationDTO]
 }

@@ -15,11 +15,11 @@ actor CharactersRepository: CharactersRepositoryProtocol, Sendable {
 	
 	private let api: APIClientProtocol
 	
-	init(api: APIClientProtocol) {
+    init(api: APIClientProtocol) {
 		self.api = api
 	}
 	
-	func getCharacters(by filter: CharactersFilter) async throws -> [Character] {
+	func getCharacters(by filter: CharactersFilter? = nil) async throws -> [Character] {
 		let page = try await api.fetchCharacters(filter: filter)
         return await CharacterMapper.map(from: page.results)
 	}

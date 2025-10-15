@@ -13,7 +13,7 @@ import Foundation
 
 protocol CharactersRepositoryProtocol: Sendable {
 	
-	func getCharacters(by filter: CharactersFilter) async throws -> [Character]
+    func getCharacters(by filter: CharactersFilter?) async throws -> [Character]
 	
 	func getCharacters(by ids: [Int]) async throws -> [Character]
 	
