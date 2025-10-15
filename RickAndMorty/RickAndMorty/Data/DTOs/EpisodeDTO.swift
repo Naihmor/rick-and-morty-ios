@@ -30,20 +30,3 @@ struct EpisodeDTO: Decodable {
 		case created
 	}
 }
-
-// MARK: - Mapper
-
-extension EpisodeDTO {
-	
-	func toDomain() -> Episode {
-		Episode(
-			id: id,
-			name: name,
-			airDate: airDate,
-			episode: episode,
-			characters: characters.map { URL(string: $0) },
-			url: URL(string: url),
-			created: created
-		)
-	}
-}

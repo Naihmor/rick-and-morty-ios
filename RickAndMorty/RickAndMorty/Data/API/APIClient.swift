@@ -41,7 +41,7 @@ extension APIClient {
 
 extension APIClient {
 	
-	func fetchLocations(filter: LocationsFilter?) async throws -> ResultDTO<LocationDTO> {
+    func fetchLocations(filter: LocationsFilter? = nil) async throws -> ResultLocationDTO {
 		try await http.request(.getAllLocations(filter))
 	}
 	
@@ -58,7 +58,7 @@ extension APIClient {
 
 extension APIClient {
 	
-	func fetchEpisodes(filter: EpisodesFilter?) async throws -> ResultDTO<EpisodeDTO> {
+    func fetchEpisodes(filter: EpisodesFilter? = nil) async throws -> ResultEpisodeDTO {
 		try await http.request(.getAllEpisodes(filter))
 	}
 	

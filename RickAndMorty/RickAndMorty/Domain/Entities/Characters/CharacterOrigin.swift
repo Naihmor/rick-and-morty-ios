@@ -15,6 +15,6 @@ extension Character {
 	
 	struct Origin: Item, Hashable, Sendable {
 		let name: String
-		let url: URL
+		let url: URL?
 	}
 }

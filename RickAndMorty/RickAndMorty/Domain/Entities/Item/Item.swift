@@ -13,5 +13,5 @@ import Foundation
 
 protocol Item {
 	var name: String { get }
-	var url: URL { get }
+	var url: URL? { get }
 }

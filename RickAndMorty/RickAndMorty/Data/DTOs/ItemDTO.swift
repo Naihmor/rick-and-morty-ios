@@ -13,5 +13,5 @@ import Foundation
 
 struct ItemDTO: Decodable {
 	let name: String
-	let url: URL
+	let url: String
 }
