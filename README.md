@@ -13,7 +13,7 @@ CLEAN architecture (Presentation / Domain / Data), SOLID, and **no third-party l
 - `feature/<slug>` → PR a `dev`
 
 ## Roadmap (short)
-- Networking + DTOs → Repository + UseCases → List (pagination) → Detail → Search/Filters → Caching → Error UX → Tests → Docs.
+- Networking + DTOs → Repository + UseCases → List (pagination) → Detail.
 
 ## API
 - https://rickandmortyapi.com/ (no API Key)
