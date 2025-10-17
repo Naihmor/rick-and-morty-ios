@@ -27,4 +27,6 @@ protocol HTTPClientProtocol {
 	/// - Returns: A decoded model instance of the given type.
 	/// - Throws: `HTTPError` if the request fails, the decoding fails, or the server returns an error.
 	func request<T>(_ endpoint: Endpoint) async throws -> T where T : Decodable
+    
+    func request<T>(_ url: URL) async throws -> T where T : Decodable
 }

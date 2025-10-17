@@ -13,9 +13,13 @@ import SwiftUI
 
 struct CharactersView: View {
     
+    @Environment(\.dependencies) private var dependencies
+    
     @State private var viewModel: CharactersViewModel
     
     @State private var showFilters: Bool = false
+    
+    @State private var selectedCharacter: Character? = nil
     
     private var columns = [GridItem(.adaptive(minimum: 160), spacing: 16)]
     
@@ -35,7 +39,6 @@ struct CharactersView: View {
                     loadingView
                 }
             }
-            .background(.black.gradient)
             .navigationTitle("Rick and Morty")
             .navigationSubtitle("All characters and more (burp) from the TV show.")
             .navigationBarTitleDisplayMode(.inline)
@@ -43,6 +46,13 @@ struct CharactersView: View {
             .task { await viewModel.load() }
             .refreshable { await viewModel.refresh() }
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer)
+            .fullScreenCover(item: $selectedCharacter) { character in
+                CharactersViewBuilder
+                    .makeDetail(
+                        for: character,
+                        useCases: dependencies.useCases.episodes
+                    )
+            }
         }
     }
 }
@@ -51,7 +61,6 @@ struct CharactersView: View {
 
 private extension CharactersView {
     
-    @ViewBuilder
     func errorView(_ error: String) -> some View {
         ContentUnavailableView {
             Text(error)
@@ -68,19 +77,24 @@ private extension CharactersView {
         }
     }
     
-    @ViewBuilder
     var charactersGrid: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(viewModel.filtered, id: \.id) { character in
-                    CharacterCard(character: character)
+                    Button {
+                        selectedCharacter = character
+                    } label: {
+                        CharacterCard(character: character)
+                            .onAppear {
+                                requestNextPageIfNeeded(current: character)
+                            }
+                    }
                 }
             }
             .padding(16)
         }
     }
     
-    @ViewBuilder
     var loadingView: some View {
         ProgressView("Loading...")
             .progressViewStyle(.circular)
@@ -98,8 +112,15 @@ private extension CharactersView {
     }
 }
 
-// MARK: - Previews
+// MARK: - Functions
 
-#Preview {
-    CharactersViewBuilder.makeList()
+private extension CharactersView {
+    
+    private func requestNextPageIfNeeded(current: Character) {
+        guard let idx = viewModel.filtered.firstIndex(where: { $0.id == current.id }) else { return }
+        let threshold = max(0, viewModel.filtered.count - 2)
+        if idx >= threshold {
+            Task { await viewModel.nextPage() }
+        }
+    }
 }

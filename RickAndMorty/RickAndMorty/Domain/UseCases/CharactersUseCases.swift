@@ -22,12 +22,14 @@ struct CharactersUseCases {
     /// Use case for retrieving all characters without any filters.
     let getCharacters: GetCharactersUseCase
     
+    let getCharactersPage: GetCharactersPageUseCase
+    
     /// Use case for retrieving characters filtered by specific criteria.
     let getFilteredCharacters: GetFilteredCharactersUseCase
     
     /// Use case for retrieving multiple characters by their identifiers.
     let getMultipleCharacters: GetMultipleCharactersUseCase
-    
+
     /// Use case for retrieving a single character by its identifier.
     let getCharacter: GetCharacterUseCase
     
@@ -39,6 +41,7 @@ struct CharactersUseCases {
     /// - Parameter repository: An object conforming to `CharactersRepositoryProtocol` used to fetch character data.
     init(repository: CharactersRepositoryProtocol) {
         self.getCharacters = .init(repository: repository)
+        self.getCharactersPage = .init(repository: repository)
         self.getFilteredCharacters = .init(repository: repository)
         self.getMultipleCharacters = .init(repository: repository)
         self.getCharacter = .init(repository: repository)
@@ -68,8 +71,23 @@ struct GetCharactersUseCase {
     ///
     /// - Returns: An array of `Character` objects representing all characters.
     /// - Throws: An error if the data retrieval fails.
-    func execute() async throws -> [Character] {
+    func execute() async throws -> Result<Character> {
         try await repository.getCharacters(by: nil)
+    }
+}
+
+struct GetCharactersPageUseCase {
+    
+    /// The repository used to fetch character data.
+    private let repository: CharactersRepositoryProtocol
+    
+    /// Initializes the use case with the specified repository.
+    ///
+    /// - Parameter repository: The repository responsible for character data retrieval.
+    init(repository: CharactersRepositoryProtocol) { self.repository = repository }
+    
+    func execute(url: URL) async throws -> Result<Character> {
+        try await repository.getCharacters(page: url)
     }
 }
 
@@ -95,7 +113,7 @@ struct GetFilteredCharactersUseCase {
     /// - Parameter filter: A `CharactersFilter` object defining the filtering criteria.
     /// - Returns: An array of `Character` objects that satisfy the filter conditions.
     /// - Throws: An error if the data retrieval or filtering process fails.
-    func execute(by filter: CharactersFilter) async throws -> [Character] {
+    func execute(by filter: CharactersFilter) async throws -> Result<Character> {
         try await repository.getCharacters(by: filter)
     }
 }

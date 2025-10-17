@@ -35,7 +35,6 @@ struct CharacterCard: View {
 
 private extension CharacterCard {
     
-    @ViewBuilder
     var emptyCard: some View {
         ZStack {
             Rectangle().opacity(0.08)
@@ -45,7 +44,6 @@ private extension CharacterCard {
         .clipShape(.containerRelative)
     }
     
-    @ViewBuilder
     func loadedCard(with image: Image) -> some View {
         ZStack(alignment: .bottom) {
             image
@@ -77,21 +75,6 @@ private extension CharacterCard {
 // MARK: - Previews
 
 #Preview {
-    CharacterCard(
-        character: Character(
-            id: 2,
-            name: "Morty Smith",
-            status: .alive,
-            species: "Human",
-            type: "",
-            gender: .male,
-            origin: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/1")!),
-            location: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/20")!),
-            image: URL(string: "https://rickandmortyapi.com/api/character/avatar/2.jpeg")!,
-            episode: [URL(string: "https://rickandmortyapi.com/api/episode/1")],
-            url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
-            created: .now
-        )
-    )
-    .padding()
+    CharacterCard(character: Character.mock)
+        .padding()
 }

@@ -1,8 +1,8 @@
 // 
-//  CharacterLocation.swift
+//  Result.swift
 //  RickAndMorty
 //
-//  Created by Javier Fernández Martínez on 13/10/25.
+//  Created by Javier Fernández Martínez on 16/10/25.
 //  Copyright © 2025 Naihmor Apps. All rights reserved.
 //
 //  This code is the property of Naihmor Apps. Unauthorized distribution, 
@@ -11,10 +11,7 @@
 
 import Foundation
 
-extension Character {
-	
-	struct Location: Item, Hashable {
-		let name: String
-		let url: URL?
-	}
+struct Result<T> {
+    let info: Info
+    let result: [T]
 }

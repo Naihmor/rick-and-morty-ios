@@ -11,7 +11,7 @@
 
 import Foundation
 
-struct Episode: Identifiable, Hashable, Sendable {
+struct Episode: Identifiable, Hashable {
 	let id: Int
 	let name: String
 	let airDate: String

@@ -50,13 +50,13 @@ extension Endpoint {
 	var path: String {
 		switch self {
 		case .getAllCharacters:					return AppConfig.apiCharacterPath
-		case .getMultipleCharacters(let ids):	return AppConfig.apiCharacterPath + idsJoined(ids)
+		case .getMultipleCharacters(let ids):	return AppConfig.apiCharacterPath + "/\(idsJoined(ids))"
 		case .getCharacter(let id): 			return AppConfig.apiCharacterPath + "/\(id)"
 		case .getAllLocations:					return AppConfig.apiLocationPath
-		case .getMultipleLocations(let ids):	return AppConfig.apiLocationPath + idsJoined(ids)
+		case .getMultipleLocations(let ids):	return AppConfig.apiLocationPath + "/\(idsJoined(ids))"
 		case .getLocation(let id):				return AppConfig.apiLocationPath + "/\(id)"
 		case .getAllEpisodes: 					return AppConfig.apiEpisodePath
-		case .getMultipleEpisodes(let ids):		return AppConfig.apiEpisodePath + idsJoined(ids)
+		case .getMultipleEpisodes(let ids):		return AppConfig.apiEpisodePath + "/\(idsJoined(ids))"
 		case .getEpisode(let id):				return AppConfig.apiEpisodePath + "/\(id)"
 		}
 	}
@@ -94,16 +94,16 @@ extension Endpoint {
 	
 	/// Builds a fully-qualified URL using `AppConfig` base and root path.
 	/// - Returns: `URL` constructed with scheme/host from base, `/api` root path, endpoint path and query items.
-	func url() -> URL {
-		var components = URLComponents()
-		components.scheme = AppConfig.apiBaseURL.scheme
-		components.host = AppConfig.apiBaseURL.host
-		components.port = AppConfig.apiBaseURL.port
-		let basePath = AppConfig.apiBaseURL.path == "/" ? "" : AppConfig.apiBaseURL.path
-		components.path = basePath + AppConfig.apiRootPath + path
-		components.queryItems = queryItems
-		guard let url = components.url else { preconditionFailure("Invalid URL components for endpoint: \(self)") }
-		return url
+    func url(raw: Bool = false) -> URL {
+        var components = URLComponents()
+        components.scheme = AppConfig.apiBaseURL.scheme
+        components.host = AppConfig.apiBaseURL.host
+        components.port = AppConfig.apiBaseURL.port
+        let basePath = AppConfig.apiBaseURL.path == "/" ? "" : AppConfig.apiBaseURL.path
+        components.path = basePath + AppConfig.apiRootPath + path
+        components.queryItems = queryItems
+        guard let url = components.url else { preconditionFailure("Invalid URL components for endpoint: \(self)") }
+        return url
 	}
 }
 
@@ -112,6 +112,6 @@ extension Endpoint {
 private extension Endpoint {
 	
 	func idsJoined(_ ids: [Int]) -> String {
-		"/" + ids.map { String($0) }.joined(separator: ",")
+		ids.map { String($0) }.joined(separator: ",")
 	}
 }

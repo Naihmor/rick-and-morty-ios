@@ -13,7 +13,7 @@ import Foundation
 
 extension Character {
 	
-	struct Origin: Item, Hashable, Sendable {
+	struct Origin: Item, Hashable {
 		let name: String
 		let url: URL?
 	}

@@ -13,7 +13,7 @@ import Foundation
 
 protocol EpisodesRepositoryProtocol {
     
-    func getEpisodes(by filter: EpisodesFilter) async throws -> [Episode]
+    func getEpisodes(by filter: EpisodesFilter) async throws -> Result<Episode>
     
     func getEpisodes(by ids: [Int]) async throws -> [Episode]
     

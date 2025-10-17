@@ -25,6 +25,8 @@ final class CharactersViewModel {
     
     private(set) var filtered: [Character] = []
     
+    private var info: Info = Info(count: 0, pages: 0, next: nil, prev: nil)
+    
     private var characters: [Character] = []
     
     private let useCases: CharactersUseCases
@@ -45,8 +47,10 @@ extension CharactersViewModel {
     func load() async {
         do {
             state = .loading
-            characters = try await useCases.getCharacters.execute()
-            filter(by: "")
+            let result = try await useCases.getCharacters.execute()
+            info = result.info
+            characters = result.result
+            filter(by: searchText)
             state = .loaded
         } catch {
             state = .error(friendly(error))
@@ -56,6 +60,22 @@ extension CharactersViewModel {
     func refresh() async {
         guard !characters.isEmpty else { return }
         await load()
+    }
+    
+    func nextPage() async {
+        guard let next = info.next
+        else {
+            state = .error(friendly(FetchError.noNextPage))
+            return
+        }
+        do {
+            let result = try await useCases.getCharactersPage.execute(url: next)
+            info = result.info
+            mergeUniqueSorted(new: result.result)
+            filter(by: "")
+        } catch {
+            state = .error(friendly(error))
+        }
     }
 }
 
@@ -74,8 +94,21 @@ private extension CharactersViewModel {
                 character.species.lowercased().contains(lower) ||
                 character.location.name.lowercased().contains(lower) ||
                 character.origin.name.lowercased().contains(lower)
-            }.sorted(by: { $0.id < $1.id })
+            }/*.sorted(by: { $0.id < $1.id })*/
         }
+    }
+    
+    private func mergeUniqueSorted(new: [Character]) {
+        var seen = Set(characters.map(\.id))
+        var merged = characters
+        merged.reserveCapacity(characters.count + new.count)
+        for c in new {
+            if seen.insert(c.id).inserted {
+                merged.append(c)
+            }
+        }
+        merged.sort { $0.id < $1.id }
+        characters = merged
     }
     
     func friendly(_ error: Error) -> String {
@@ -86,7 +119,22 @@ private extension CharactersViewModel {
             case .decoding: return "Data error. Please try later."
             case .invalidURL, .unknown: return "Unexpected error. Try again."
             }
+        } else if let fetchError = error as? FetchError {
+            switch fetchError {
+            case .noNextPage: return "No more characters to load."
+            case .noPrevPage: return "Cannot go back further."
+            }
         }
         return "Something went wrong. Try again."
+    }
+}
+
+// MARK: - Errors
+
+private extension CharactersViewModel {
+    
+    enum FetchError: Error {
+        case noNextPage
+        case noPrevPage
     }
 }

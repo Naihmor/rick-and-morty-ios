@@ -28,21 +28,28 @@ final class HTTPClient: HTTPClientProtocol {
 	///
 	/// This is a stub to be implemented in the next step.
 	func request<T>(_ endpoint: Endpoint) async throws -> T where T : Decodable {
-		let request = createGetRequest(from: endpoint.url())
-		do {
-			let (data, response) = try await session.data(for: request)
-			guard let http = response as? HTTPURLResponse else { throw HTTPError.unknown }
-			guard (200...299).contains(http.statusCode) else {
-				throw HTTPError.server(statusCode: http.statusCode, message: try decodeJSONData(data: data))
-			}
-			return try decodeJSONData(data: data)
-		} catch {
-			throw HTTPError.unknown
-		}
+        try await handleRequest(createGetRequest(from: endpoint.url()))
 	}
+    
+    func request<T>(_ url: URL) async throws -> T where T : Decodable {
+        try await handleRequest(createGetRequest(from: url))
+    }
 }
 
 private extension HTTPClient {
+    
+    func handleRequest<T>(_ request: URLRequest) async throws -> T where T : Decodable {
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard let http = response as? HTTPURLResponse else { throw HTTPError.unknown }
+            guard (200...299).contains(http.statusCode) else {
+                throw HTTPError.server(statusCode: http.statusCode, message: try decodeJSONData(data: data))
+            }
+            return try decodeJSONData(data: data)
+        } catch {
+            throw HTTPError.unknown
+        }
+    }
 	
 	func createGetRequest(from url: URL) -> URLRequest {
 		var request = URLRequest(url: url)
@@ -53,7 +60,7 @@ private extension HTTPClient {
 	
 	func decodeJSONData<T: Decodable>(data: Data) throws -> T {
 		let decoder = JSONDecoder()
-		decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
 		decoder.dateDecodingStrategy = .iso8601
 		do {
 			return try decoder.decode(T.self, from: data)

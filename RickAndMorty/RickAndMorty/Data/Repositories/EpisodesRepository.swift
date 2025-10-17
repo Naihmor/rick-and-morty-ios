@@ -19,9 +19,9 @@ actor EpisodesRepository: EpisodesRepositoryProtocol {
         self.api = api
     }
     
-    func getEpisodes(by filter: EpisodesFilter) async throws -> [Episode] {
+    func getEpisodes(by filter: EpisodesFilter) async throws -> Result<Episode> {
         let page = try await api.fetchEpisodes(filter: filter)
-        return await EpisodeMapper.map(from: page.results)
+        return await EpisodeMapper.map(from: page)
     }
 
     func getEpisodes(by ids: [Int]) async throws -> [Episode] {

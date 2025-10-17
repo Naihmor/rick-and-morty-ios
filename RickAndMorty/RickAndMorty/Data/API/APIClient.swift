@@ -27,6 +27,10 @@ extension APIClient {
 	func fetchCharacters(filter: CharactersFilter? = nil) async throws -> ResultCharacterDTO {
 		try await http.request(.getAllCharacters(filter))
 	}
+    
+    func fetchCharacters(page url: URL) async throws -> ResultCharacterDTO {
+        try await http.request(url)
+    }
 	
 	func fetchCharacter(id: Int) async throws -> CharacterDTO {
 		try await http.request(.getCharacter(id))

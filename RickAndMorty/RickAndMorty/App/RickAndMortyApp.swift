@@ -14,9 +14,32 @@ import SwiftUI
 @main
 struct RickAndMortyApp: App {
     
+    private var dependencies: AppDependencies
+    
+    init() {
+        let api = APIClient()
+        let charactersRepository = CharactersRepository(api: api)
+        let locationsRepository = LocationsRepository(api: api)
+        let episodesRepository = EpisodesRepository(api: api)
+        let charactersUseCases = CharactersUseCases(repository: charactersRepository)
+        let episodesUseCases = EpisodeUseCases(repository: episodesRepository)
+        self.dependencies = AppDependencies(
+            repositories: .init(
+                characters: charactersRepository,
+                locations: locationsRepository,
+                episodes: episodesRepository),
+            useCases: .init(
+                characters: charactersUseCases,
+                episodes: episodesUseCases))
+    }
+    
     var body: some Scene {
         WindowGroup {
-            CharactersViewBuilder.makeList()
+            CharactersViewBuilder.makeList(
+                useCases: dependencies.useCases.characters
+            )
+            .environment(\.dependencies, dependencies)
+            .preferredColorScheme(.dark)
         }
     }
 }

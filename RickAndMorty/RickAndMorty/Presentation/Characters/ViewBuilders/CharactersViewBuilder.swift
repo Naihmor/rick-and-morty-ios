@@ -13,11 +13,13 @@ import Foundation
 
 struct CharactersViewBuilder {
 
-    static func makeList() -> CharactersView {
-        let api = APIClient()
-        let repository = CharactersRepository(api: api)
-        let useCases = CharactersUseCases(repository: repository)
+    static func makeList(useCases: CharactersUseCases) -> CharactersView {
         let viewModel = CharactersViewModel(useCases: useCases)
         return CharactersView(viewModel: viewModel)
+    }
+    
+    static func makeDetail(for character: Character, useCases: EpisodeUseCases) -> CharacterView {
+        let viewModel = CharacterViewModel(character: character, useCases: useCases)
+        return CharacterView(viewModel: viewModel)
     }
 }

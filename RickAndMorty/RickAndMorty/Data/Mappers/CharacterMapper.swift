@@ -13,6 +13,22 @@ import Foundation
 
 enum CharacterMapper {
     
+    static func map(from result: ResultCharacterDTO) -> Result<Character> {
+        var next: URL? = nil
+        var prev: URL? = nil
+        if let nextString = result.info.next { next = URL(string: nextString) }
+        if let prevString = result.info.next { prev = URL(string: prevString) }
+        return Result(
+            info: .init(
+                count: result.info.count,
+                pages: result.info.pages,
+                next: next,
+                prev: prev
+            ),
+            result: map(from: result.results)
+        )
+    }
+    
     static func map(from dto: CharacterDTO) -> Character {
         Character(
             id: dto.id,
@@ -21,10 +37,17 @@ enum CharacterMapper {
             species: dto.species,
             type: dto.type,
             gender: Character.Gender(rawValue: dto.gender) ?? .unknown,
-            origin: .init(name: dto.origin.name, url: URL(string: dto.origin.url)),
-            location: .init(name: dto.location.name, url: URL(string: dto.location.url)),
+            origin: .init(
+                name: dto.origin.name,
+                url: URL(string: dto.origin.url)
+            ),
+            location: .init(
+                name: dto.location.name,
+                url: URL(string: dto.location.url)
+            ),
             image: URL(string: dto.image),
-            episode: dto.episode.map { URL(string: $0) },
+            episode: dto.episode.map { URL(string: $0)
+            },
             url: URL(string: dto.url),
             created: dto.created
         )

@@ -13,7 +13,7 @@ import Foundation
 
 extension Character {
 	
-	enum Gender: String, Sendable {
+	enum Gender: String {
 		case female
 		case male
 		case genderless

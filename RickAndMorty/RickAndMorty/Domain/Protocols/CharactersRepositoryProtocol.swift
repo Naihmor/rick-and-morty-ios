@@ -29,7 +29,9 @@ protocol CharactersRepositoryProtocol: Sendable {
     ///
     /// - Returns: An array of `Character` objects matching the filter criteria.
     /// - Throws: An error if the retrieval operation fails.
-    func getCharacters(by filter: CharactersFilter?) async throws -> [Character]
+    func getCharacters(by filter: CharactersFilter?) async throws -> Result<Character>
+    
+    func getCharacters(page url: URL) async throws -> Result<Character>
     
     /// Retrieves multiple characters by their unique identifiers.
     ///

@@ -20,10 +20,8 @@ struct CharacterInfoRow: View {
     var body: some View {
         HStack {
             Text("\(title):")
-                .font(.title2)
                 .foregroundStyle(.gray)
             Text(value.capitalized)
-                .font(.title2.bold())
                 .foregroundStyle(.white)
             Spacer()
         }

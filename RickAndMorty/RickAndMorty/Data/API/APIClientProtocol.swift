@@ -14,6 +14,8 @@ import Foundation
 protocol APIClientProtocol: Sendable {
 	
 	func fetchCharacters(filter: CharactersFilter?) async throws -> ResultCharacterDTO
+    
+    func fetchCharacters(page url: URL) async throws -> ResultCharacterDTO
 	
 	func fetchCharacters(ids: [Int]) async throws -> [CharacterDTO]
 	

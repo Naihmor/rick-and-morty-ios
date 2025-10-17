@@ -11,7 +11,7 @@
 
 import Foundation
 
-struct Character: Identifiable, Hashable, Sendable {
+struct Character: Identifiable {
 	let id: Int
 	let name: String
 	let status: Status
@@ -24,4 +24,24 @@ struct Character: Identifiable, Hashable, Sendable {
 	let episode: [URL?]
 	let url: URL?
 	let created: Date
+}
+
+extension Character {
+    
+    static var mock: Character {
+        Character(
+            id: 2,
+            name: "Morty Smith",
+            status: .alive,
+            species: "Human",
+            type: "",
+            gender: .male,
+            origin: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/1")!),
+            location: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/20")!),
+            image: URL(string: "https://rickandmortyapi.com/api/character/avatar/2.jpeg")!,
+            episode: [URL(string: "https://rickandmortyapi.com/api/episode/1")],
+            url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
+            created: .now
+        )
+    }
 }

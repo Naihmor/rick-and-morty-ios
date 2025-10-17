@@ -17,7 +17,7 @@ import Foundation
 /// encapsulating the details of fetching character data and transforming it into domain models.
 /// It provides an abstraction over the underlying API client, ensuring separation of concerns
 /// and promoting testability and maintainability.
-actor CharactersRepository: CharactersRepositoryProtocol, Sendable {
+actor CharactersRepository: CharactersRepositoryProtocol {
     
     /// The API client used to fetch character data from the remote source.
     /// This client handles the network requests and raw data retrieval.
@@ -37,9 +37,14 @@ actor CharactersRepository: CharactersRepositoryProtocol, Sendable {
     ///
     /// - Returns: An array of `Character` objects matching the filter criteria.
     /// - Throws: An error if the retrieval operation fails.
-    func getCharacters(by filter: CharactersFilter? = nil) async throws -> [Character] {
+    func getCharacters(by filter: CharactersFilter? = nil) async throws -> Result<Character> {
         let page = try await api.fetchCharacters(filter: filter)
-        return await CharacterMapper.map(from: page.results)
+        return await CharacterMapper.map(from: page)
+    }
+    
+    func getCharacters(page url: URL) async throws -> Result<Character> {
+        let page = try await api.fetchCharacters(page: url)
+        return await CharacterMapper.map(from: page)
     }
     
     /// Retrieves multiple characters by their unique identifiers.

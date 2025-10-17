@@ -1,11 +1,11 @@
-// 
+//
 //  CharacterView.swift
 //  RickAndMorty
 //
 //  Created by Javier Fernández Martínez on 15/10/25.
 //  Copyright © 2025 Naihmor Apps. All rights reserved.
 //
-//  This code is the property of Naihmor Apps. Unauthorized distribution, 
+//  This code is the property of Naihmor Apps. Unauthorized distribution,
 //  modification, or use of this code, in whole or in part, is strictly prohibited.
 //
 
@@ -15,30 +15,22 @@ struct CharacterView: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    @State private var scrollOffset: CGFloat = 0.0
-    
-    @State private var showEpisodes: Bool = false
+    @State private var viewModel: CharacterViewModel
     
     private let imageHeight: CGFloat = 400.0
     
-    let character: Character
+    init(viewModel: CharacterViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack {
-                    characterImage
-                    characterNameView
-                    characterInfoView
-                }
-//                .offset(y: scrollOffset > 0 ? 0 : scrollOffset)
+            List {
+                imageSection
+                nameandChipsSection
+                originAndLocationSection
+                episodesSection
             }
-//            .onScrollGeometryChange(for: CGFloat.self, of: { geometry in
-//                geometry.contentOffset.y
-//            }, action: { oldValue, newValue in
-//                scrollOffset = newValue
-//            })
-            .background(.black.gradient)
             .toolbar { toolbarContent }
             .ignoresSafeArea()
         }
@@ -49,17 +41,71 @@ struct CharacterView: View {
 
 private extension CharacterView {
     
-    @ToolbarContentBuilder
-    var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button(role: .close) {
-                dismiss()
+    var imageSection: some View {
+        Section {
+            characterImage
+        }
+        .listRowInsets(.all, 0)
+        .listSectionMargins(.all, 0)
+        .listSectionSeparator(.hidden)
+        .listSectionSpacing(64)
+    }
+    
+    var nameandChipsSection: some View {
+        Section {
+            characterNameView
+            chipsScroll
+                .listRowInsets(.all, 0)
+        }
+    }
+    
+    var originAndLocationSection: some View {
+        Section {
+            originAndLocationView
+        }
+    }
+    
+    var episodesSection: some View {
+        Section("Episodes") {
+            DisclosureGroup(isExpanded: $viewModel.isEpisodesExpanded) {
+                if viewModel.isLoadingEpisodes {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else if let message = viewModel.episodesErrorMessage {
+                    VStack(spacing: 8) {
+                        Text(message)
+                            .foregroundStyle(.secondary)
+                        Button("Retry") {
+                            viewModel.reloadEpisodes()
+                        }
+                    }
+                } else if viewModel.episodes.isEmpty {
+                    Text("No episodes to show")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(viewModel.episodes) { episode in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(episode.name)
+                            Text("\(episode.episode) - \(episode.airDate)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } label: {
+                Button {
+                    viewModel.onTapViewAllEpisodes()
+                } label: {
+                    Text("View all episode appearances")
+                }
             }
+            .disclosureGroupStyle(.automatic)
+            .tint(.teal)
         }
     }
     
     var characterImage: some View {
-        AsyncImage(url: character.image) { phase in
+        AsyncImage(url: viewModel.character.image) { phase in
             switch phase {
             case .empty:
                 EmptyView()
@@ -67,7 +113,6 @@ private extension CharacterView {
                 image
                     .resizable()
                     .scaledToFill()
-                    .frame(height: imageHeight + (scrollOffset < 0 ? abs(scrollOffset / 2) : 0))
             case .failure:
                 EmptyView()
             @unknown default:
@@ -76,40 +121,8 @@ private extension CharacterView {
         }
     }
     
-    var characterInfoView: some View {
-        VStack(alignment: .leading) {
-            Divider()
-                .background(.teal)
-                .padding(.horizontal)
-            chipsScroll
-                .padding(.vertical)
-            basicInfoView
-                .padding(.horizontal)
-            Divider()
-                .background(.teal)
-                .padding(.horizontal)
-            VStack(alignment: .leading) {
-                Text("Episodes")
-                    .font(.title2)
-                    .foregroundStyle(.white)
-                DisclosureGroup(isExpanded: $showEpisodes) {
-                    Text("Episode")
-                } label: {
-                    Button {
-                        showEpisodes.toggle()
-                    } label: {
-                        Text("View all episode appearances")
-                    }
-                }
-                .disclosureGroupStyle(.automatic)
-                .tint(.white)
-            }
-            .padding(.horizontal)
-        }
-    }
-    
     var characterNameView: some View {
-        Text(character.name)
+        Text(viewModel.character.name)
             .font(.title.bold())
             .foregroundStyle(.white)
     }
@@ -125,59 +138,49 @@ private extension CharacterView {
         }
     }
     
-    var basicInfoView: some View {
+    var originAndLocationView: some View {
         VStack(spacing: 8) {
-            CharacterInfoRow(title: "Origin", value: character.origin.name)
-            CharacterInfoRow(title: "Current location", value: character.location.name)
+            CharacterInfoRow(title: "Origin", value: viewModel.character.origin.name)
+            CharacterInfoRow(title: "Current location", value: viewModel.character.location.name)
         }
     }
     
     var speciesView: some View {
-        Text(character.species.capitalized)
-            .foregroundStyle(.white)
-            .padding(.horizontal)
-            .padding(.vertical, 6)
-            .background(.green.opacity(0.5))
-            .border(.white.opacity(0.3), width: 0.5)
-            .clipShape(.capsule)
+        Text(viewModel.character.species.capitalized)
+            .chipStyle(color: .green)
     }
     
     var genderView: some View {
-        Text(character.gender.rawValue.capitalized)
-            .foregroundStyle(.white)
-            .padding(.horizontal)
-            .padding(.vertical, 6)
-            .background(.blue.opacity(0.5))
-            .border(.white.opacity(0.3), width: 0.5)
-            .clipShape(.capsule)
+        Text(viewModel.character.gender.rawValue.capitalized)
+            .chipStyle(color: .blue)
     }
     
     var typeView: some View {
-        Text(character.type.isEmpty ? "No type" : character.type.capitalized)
-            .foregroundStyle(.white)
-            .padding(.horizontal)
-            .padding(.vertical, 6)
-            .background(.red.opacity(0.5))
-            .border(.white.opacity(0.3), width: 0.5)
-            .clipShape(.capsule)
+        Text(viewModel.character.type.isEmpty ? "No type" : viewModel.character.type.capitalized)
+            .chipStyle(color: .red)
+    }
+    
+    @ToolbarContentBuilder
+    var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(role: .close) {
+                dismiss()
+            }
+        }
     }
 }
 
 // MARK: - Previews
 
-#Preview {
-    CharacterView(character: Character(
-        id: 2,
-        name: "Morty Smith",
-        status: .alive,
-        species: "Human",
-        type: "",
-        gender: .male,
-        origin: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/1")!),
-        location: .init(name: "Earth", url: URL(string: "https://rickandmortyapi.com/api/location/20")!),
-        image: URL(string: "https://rickandmortyapi.com/api/character/avatar/2.jpeg")!,
-        episode: [URL(string: "https://rickandmortyapi.com/api/episode/1")],
-        url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
-        created: .now
-    ))
-}
+//#Preview {
+//    // Lightweight stub for previews
+//    struct EpisodesRepositoryStub: EpisodesRepositoryProtocol {
+//        func getEpisodes(by ids: [Int]) async throws -> [Episode] { [] }
+//    }
+//    let repo = EpisodesRepositoryStub()
+//    let useCase = GetEpisodesByCharacterUseCase(repository: repo)
+//    let useCases = EpisodeUseCases(getEpisodesByCharacter: useCase)
+//    let vm = CharacterViewModel(character: Character.mock, useCases: useCases)
+//    return CharacterView(character: Character.mock, viewModel: vm)
+//}
+

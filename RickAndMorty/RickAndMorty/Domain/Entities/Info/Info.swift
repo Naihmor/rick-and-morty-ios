@@ -11,7 +11,7 @@
 
 import Foundation
 
-struct Info: Sendable {
+struct Info {
 	let count: Int
 	let pages: Int
 	let next: URL?
